@@ -1,0 +1,40 @@
+Q1.1
+SQL:
+USE company;
+
+INSERT INTO DEPARTMENT (Dnumber, Dname, mgr_ssn, mgr_start_date)
+VALUES (4, 'Marketing', '4', '2024-01-01');
+
+DELETE FROM EMPLOYEE WHERE ssn = '4';
+
+Output:
+
+(1 row affected)
+Msg 547, Level 16, State 0, Line 6
+The DELETE statement conflicted with the REFERENCE constraint "fk_department_mgr". The conflict occurred in database "company", table "dbo.DEPARTMENT", column 'mgr_ssn'.
+The statement has been terminated.
+
+Completion time: 2026-10-25T15:29:35.1100709+03:00
+
+
+Q1.2
+SQL:
+
+INSERT INTO PROJECT (Pnumber, Pname, Plocation, Dno)
+VALUES (40, 'GhostProject', 'Cairo', 99);
+
+Output:
+
+Msg 547, Level 16, State 0, Line 8
+The INSERT statement conflicted with the FOREIGN KEY constraint "fk_project_dept". The conflict occurred in database "company", table "dbo.DEPARTMENT", column 'Dnumber'.
+The statement has been terminated.
+
+Completion time: 2026-10-25T15:31:40.8810644+03:00
+
+
+Q1.3
+Answer:
+
+The first row cannot be inserted because each table needs an existing row in the other one. Solutions:
+1. Make one column nullable temporarily: insert with NULL, then UPDATE it.
+2. Create the tables without the foreign key, insert the data, then add the foreign key with ALTER TABLE.

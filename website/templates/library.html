@@ -1,0 +1,117 @@
+{% extends "base.html" %}
+{% block title %}Library{% endblock %}
+
+{% block content %}
+<div class="card wide">
+    <div class="topbar">
+        <h1>Library</h1>
+        <div class="user">
+            <a class="btn-small" href="/">To-Do</a>
+        </div>
+    </div>
+
+    <h2>Books</h2>
+    {% if book_edit_error %}
+    <div class="alert">{{ book_edit_error }}</div>
+    {% endif %}
+    {% if books %}
+    <table>
+        <tr>
+            <th>ID</th>
+            <th>Title</th>
+            <th>Price</th>
+            <th>Author</th>
+            <th></th>
+        </tr>
+        {% for b in books %}
+        <tr>
+            <td>{{ b.book_id }}</td>
+            <td><input type="text" name="title" form="book-edit-{{ b.book_id }}" value="{{ b.title }}"></td>
+            <td><input type="text" name="price" form="book-edit-{{ b.book_id }}" value="{{ b.price }}"></td>
+            <td>
+                <select name="author_id" form="book-edit-{{ b.book_id }}">
+                    {% for a in authors %}
+                    <option value="{{ a.author_id }}" {% if a.author_id == b.author_id %}selected{% endif %}>{{ a.name }}</option>
+                    {% endfor %}
+                </select>
+            </td>
+            <td>
+                <form method="POST" action="/library/books/{{ b.book_id }}/edit" id="book-edit-{{ b.book_id }}"></form>
+                <button type="submit" form="book-edit-{{ b.book_id }}" class="btn-small">Save</button>
+                <form method="POST" action="/library/books/{{ b.book_id }}/delete" style="display:inline" onsubmit="return confirm('Delete this book?');">
+                    <button type="submit" class="btn-small danger">Delete</button>
+                </form>
+            </td>
+        </tr>
+        {% endfor %}
+    </table>
+    {% else %}
+    <p class="empty">No books yet.</p>
+    {% endif %}
+
+    <h3>Add book</h3>
+    <form method="POST" action="/library/books/add" novalidate>
+        <label for="book-title">Title</label>
+        <input type="text" id="book-title" name="title" value="{{ book_form.title or '' }}">
+        <div class="error">{{ book_errors.title or '' }}</div>
+
+        <label for="book-price">Price</label>
+        <input type="text" id="book-price" name="price" value="{{ book_form.price or '' }}">
+        <div class="error">{{ book_errors.price or '' }}</div>
+
+        <label for="book-author">Author</label>
+        <select id="book-author" name="author_id">
+            <option value="">-- Select author --</option>
+            {% for a in authors %}
+            <option value="{{ a.author_id }}" {% if book_form.author_id == a.author_id|string %}selected{% endif %}>{{ a.name }}</option>
+            {% endfor %}
+        </select>
+        <div class="error">{{ book_errors.author_id or '' }}</div>
+
+        <button type="submit">Add book</button>
+    </form>
+
+    <h2>Authors</h2>
+    {% if author_edit_error %}
+    <div class="alert">{{ author_edit_error }}</div>
+    {% endif %}
+    {% if authors %}
+    <table>
+        <tr>
+            <th>ID</th>
+            <th>Name</th>
+            <th>Country</th>
+            <th></th>
+        </tr>
+        {% for a in authors %}
+        <tr>
+            <td>{{ a.author_id }}</td>
+            <td><input type="text" name="name" form="author-edit-{{ a.author_id }}" value="{{ a.name }}"></td>
+            <td><input type="text" name="country" form="author-edit-{{ a.author_id }}" value="{{ a.country or '' }}"></td>
+            <td>
+                <form method="POST" action="/library/authors/{{ a.author_id }}/edit" id="author-edit-{{ a.author_id }}"></form>
+                <button type="submit" form="author-edit-{{ a.author_id }}" class="btn-small">Save</button>
+                <form method="POST" action="/library/authors/{{ a.author_id }}/delete" style="display:inline" onsubmit="return confirm('Delete this author and all of their books?');">
+                    <button type="submit" class="btn-small danger">Delete</button>
+                </form>
+            </td>
+        </tr>
+        {% endfor %}
+    </table>
+    {% else %}
+    <p class="empty">No authors yet.</p>
+    {% endif %}
+
+    <h3>Add author</h3>
+    <form method="POST" action="/library/authors/add" novalidate>
+        <label for="author-name">Name</label>
+        <input type="text" id="author-name" name="name" value="{{ author_form.name or '' }}">
+        <div class="error">{{ author_errors.name or '' }}</div>
+
+        <label for="author-country">Country</label>
+        <input type="text" id="author-country" name="country" value="{{ author_form.country or '' }}">
+
+        <button type="submit">Add author</button>
+    </form>
+</div>
+{% endblock %}
